@@ -3,6 +3,12 @@ defprotocol Qualifiable do
   def update_quality(item)
 end
 
+defimpl Qualifiable, for: GildedRose.LegendaryItem do
+  def update_quality(item) do
+    item
+  end
+end
+
 defimpl Qualifiable, for: Any do
   def update_quality(%struct{item: item}) do
     item =

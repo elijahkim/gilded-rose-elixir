@@ -41,16 +41,15 @@ defmodule GildedRose do
       %{name: "Sulfuras, Hand of Ragnaros"} -> struct(LegendaryItem, item: item)
       %{name: "Aged Brie"} -> struct(AgingItem, item: item)
       %{name: "Backstage passes to a TAFKAL80ETC concert"} -> struct(BackstageItem, item: item)
-      item -> struct(LegendaryItem, item: item)
+      item -> struct(BaseItem, item: item)
     end
   end
 
   def update_quality(%Item{} = item) do
-    qualified_item =
-      item
-      |> to_qualified_item()
-      |> Qualifiable.update_quality()
-      |> Map.get(:item)
+    item
+    |> to_qualified_item()
+    |> Qualifiable.update_quality()
+    |> Map.get(:item)
   end
 
   def update_quality(agent) do
