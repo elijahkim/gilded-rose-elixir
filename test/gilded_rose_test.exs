@@ -92,6 +92,21 @@ defmodule GildedRoseTest do
       assert item.quality == 80
       assert item.sell_in == 0
     end
+
+    test "conjured items drop twice as fast" do
+      {:ok, agent} =
+        Agent.start_link(fn ->
+          [
+            Item.new("Conjured Mana Cake", 10, 20)
+          ]
+        end)
+
+      GildedRose.update_quality(agent)
+      [item] = GildedRose.items(agent)
+
+      assert item.quality == 18
+      assert item.sell_in == 9
+    end
   end
 
   describe "update_quality/1 backstage passes exceptions" do

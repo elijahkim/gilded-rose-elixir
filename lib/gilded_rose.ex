@@ -18,6 +18,10 @@ defmodule GildedRose do
     defstruct [:item]
   end
 
+  defmodule ConjuredItem do
+    defstruct [:item]
+  end
+
   def new() do
     {:ok, agent} =
       Agent.start_link(fn ->
@@ -41,6 +45,7 @@ defmodule GildedRose do
       %{name: "Sulfuras, Hand of Ragnaros"} -> struct(LegendaryItem, item: item)
       %{name: "Aged Brie"} -> struct(AgingItem, item: item)
       %{name: "Backstage passes to a TAFKAL80ETC concert"} -> struct(BackstageItem, item: item)
+      %{name: "Conjured Mana Cake"} -> struct(ConjuredItem, item: item)
       item -> struct(BaseItem, item: item)
     end
   end
