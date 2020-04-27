@@ -45,32 +45,20 @@ defimpl Qualifiable, for: GildedRose.BackstageItem do
   end
 end
 
-defimpl Qualifiable, for: Any do
-  def update_quality(%struct{item: item}) do
-    item =
-      if item.quality > 0 do
-        %{item | quality: item.quality - 1}
-      else
-        item
-      end
+defimpl Qualifiable, for: GildedRose.BaseItem do
+  def update_quality(%{item: %{sell_in: sell_in, quality: 0} = item}) do
+    struct(@for, item: %{item | sell_in: sell_in - 1, quality: 0})
+  end
 
-    item = %{item | sell_in: item.sell_in - 1}
+  def update_quality(%{item: %{sell_in: 0, quality: quality} = item}) when quality <= 2 do
+    struct(@for, item: %{item | sell_in: 0, quality: 0})
+  end
 
-    item =
-      cond do
-        item.sell_in < 0 ->
-          cond do
-            item.quality > 0 ->
-              %{item | quality: item.quality - 1}
+  def update_quality(%{item: %{sell_in: 0, quality: quality} = item}) do
+    struct(@for, item: %{item | sell_in: 0, quality: quality - 2})
+  end
 
-            true ->
-              item
-          end
-
-        true ->
-          item
-      end
-
-    struct(struct, item: item)
+  def update_quality(%{item: %{sell_in: sell_in, quality: quality} = item}) do
+    struct(@for, item: %{item | sell_in: sell_in - 1, quality: quality - 1})
   end
 end
