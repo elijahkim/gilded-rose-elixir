@@ -15,11 +15,7 @@ defimpl Qualifiable, for: Any do
       cond do
         item.name != "Aged Brie" && item.name != "Backstage passes to a TAFKAL80ETC concert" ->
           if item.quality > 0 do
-            if item.name != "Sulfuras, Hand of Ragnaros" do
-              %{item | quality: item.quality - 1}
-            else
-              item
-            end
+            %{item | quality: item.quality - 1}
           else
             item
           end
@@ -69,14 +65,7 @@ defimpl Qualifiable, for: Any do
           end
       end
 
-    item =
-      cond do
-        item.name != "Sulfuras, Hand of Ragnaros" ->
-          %{item | sell_in: item.sell_in - 1}
-
-        true ->
-          item
-      end
+    item = %{item | sell_in: item.sell_in - 1}
 
     item =
       cond do
@@ -87,13 +76,7 @@ defimpl Qualifiable, for: Any do
                 item.name != "Backstage passes to a TAFKAL80ETC concert" ->
                   cond do
                     item.quality > 0 ->
-                      cond do
-                        item.name != "Sulfuras, Hand of Ragnaros" ->
-                          %{item | quality: item.quality - 1}
-
-                        true ->
-                          item
-                      end
+                      %{item | quality: item.quality - 1}
 
                     true ->
                       item
