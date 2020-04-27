@@ -27,7 +27,7 @@ defimpl Qualifiable, for: Any do
   def update_quality(%struct{item: item}) do
     item =
       cond do
-        item.name != "Aged Brie" && item.name != "Backstage passes to a TAFKAL80ETC concert" ->
+        item.name != "Backstage passes to a TAFKAL80ETC concert" ->
           if item.quality > 0 do
             %{item | quality: item.quality - 1}
           else
@@ -85,20 +85,17 @@ defimpl Qualifiable, for: Any do
       cond do
         item.sell_in < 0 ->
           cond do
-            item.name != "Aged Brie" ->
+            item.name != "Backstage passes to a TAFKAL80ETC concert" ->
               cond do
-                item.name != "Backstage passes to a TAFKAL80ETC concert" ->
-                  cond do
-                    item.quality > 0 ->
-                      %{item | quality: item.quality - 1}
-
-                    true ->
-                      item
-                  end
+                item.quality > 0 ->
+                  %{item | quality: item.quality - 1}
 
                 true ->
-                  %{item | quality: item.quality - item.quality}
+                  item
               end
+
+            true ->
+              %{item | quality: item.quality - item.quality}
 
             true ->
               cond do
