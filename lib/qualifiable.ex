@@ -28,6 +28,10 @@ defimpl Qualifiable, for: GildedRose.BackstageItem do
     struct(@for, item: %{item | quality: 0})
   end
 
+  def update_quality(%{item: %{sell_in: sell_in, quality: 50} = item}) do
+    struct(@for, item: %{item | sell_in: sell_in - 1})
+  end
+
   def update_quality(%{item: %{sell_in: sell_in, quality: quality} = item}) when sell_in <= 5 do
     struct(@for, item: %{item | sell_in: sell_in - 1, quality: quality + 3})
   end
@@ -44,57 +48,10 @@ end
 defimpl Qualifiable, for: Any do
   def update_quality(%struct{item: item}) do
     item =
-      cond do
-        item.name != "Backstage passes to a TAFKAL80ETC concert" ->
-          if item.quality > 0 do
-            %{item | quality: item.quality - 1}
-          else
-            item
-          end
-
-        true ->
-          cond do
-            item.quality < 50 ->
-              item = %{item | quality: item.quality + 1}
-
-              cond do
-                item.name == "Backstage passes to a TAFKAL80ETC concert" ->
-                  item =
-                    cond do
-                      item.sell_in < 11 ->
-                        cond do
-                          item.quality < 50 ->
-                            %{item | quality: item.quality + 1}
-
-                          true ->
-                            item
-                        end
-
-                      true ->
-                        item
-                    end
-
-                  cond do
-                    item.sell_in < 6 ->
-                      cond do
-                        item.quality < 50 ->
-                          %{item | quality: item.quality + 1}
-
-                        true ->
-                          item
-                      end
-
-                    true ->
-                      item
-                  end
-
-                true ->
-                  item
-              end
-
-            true ->
-              item
-          end
+      if item.quality > 0 do
+        %{item | quality: item.quality - 1}
+      else
+        item
       end
 
     item = %{item | sell_in: item.sell_in - 1}
@@ -103,26 +60,11 @@ defimpl Qualifiable, for: Any do
       cond do
         item.sell_in < 0 ->
           cond do
-            item.name != "Backstage passes to a TAFKAL80ETC concert" ->
-              cond do
-                item.quality > 0 ->
-                  %{item | quality: item.quality - 1}
-
-                true ->
-                  item
-              end
+            item.quality > 0 ->
+              %{item | quality: item.quality - 1}
 
             true ->
-              %{item | quality: item.quality - item.quality}
-
-            true ->
-              cond do
-                item.quality < 50 ->
-                  %{item | quality: item.quality + 1}
-
-                true ->
-                  item
-              end
+              item
           end
 
         true ->
