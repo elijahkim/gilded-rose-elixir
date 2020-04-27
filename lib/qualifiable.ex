@@ -15,7 +15,7 @@ defimpl Qualifiable, for: GildedRose.AgingItem do
   end
 
   def update_quality(%{item: %{sell_in: sell_in, quality: quality} = item}) do
-    struct(@for, item: %{item | sell_in: max(sell_in - 1, 0), quality: quality + 1})
+    struct(@for, item: %{item | sell_in: max(sell_in - 1, 0), quality: min(quality + 1, 50)})
   end
 end
 

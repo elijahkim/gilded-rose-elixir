@@ -1,5 +1,6 @@
 defmodule GildedRoseTest do
   use ExUnit.Case
+  use ExUnitProperties
   doctest GildedRose
   alias GildedRose.Item
 
@@ -40,16 +41,78 @@ defmodule GildedRoseTest do
       assert item.quality == 18
     end
 
-    test "quality can never be negative" do
-      {:ok, agent} =
-        Agent.start_link(fn ->
-          [Item.new("+5 Dexterity Vest", 10, 0)]
-        end)
+    property "quality can never exceed 50" do
+      item_types = [
+        "Aged Brie",
+        "Backstage passes to a TAFKAL80ETC concert"
+      ]
 
-      GildedRose.update_quality(agent)
-      [item] = GildedRose.items(agent)
+      check all(
+              sell_in <- StreamData.positive_integer(),
+              quality <- StreamData.positive_integer(),
+              type <- StreamData.member_of(item_types)
+            ) do
+        {:ok, agent} =
+          Agent.start_link(fn ->
+            [Item.new(type, sell_in, quality)]
+          end)
 
-      assert item.quality == 0
+        GildedRose.update_quality(agent)
+        [item] = GildedRose.items(agent)
+
+        assert item.quality <= 50
+      end
+    end
+
+    property "quality can never be negative" do
+      item_types = [
+        "+5 Dexterity Vest",
+        "Elixir of the Mongoose",
+        "Conjured Mana Cake"
+      ]
+
+      check all(
+              sell_in <- StreamData.positive_integer(),
+              quality <- StreamData.positive_integer(),
+              type <- StreamData.member_of(item_types)
+            ) do
+        {:ok, agent} =
+          Agent.start_link(fn ->
+            [Item.new(type, sell_in, quality)]
+          end)
+
+        GildedRose.update_quality(agent)
+        [item] = GildedRose.items(agent)
+
+        assert item.quality >= 0
+      end
+    end
+
+    property "sell_in can never be negative" do
+      item_types = [
+        "+5 Dexterity Vest",
+        "Aged Brie",
+        "Elixir of the Mongoose",
+        "Sulfuras, Hand of Ragnaros",
+        "Backstage passes to a TAFKAL80ETC concert",
+        "Conjured Mana Cake"
+      ]
+
+      check all(
+              sell_in <- StreamData.positive_integer(),
+              quality <- StreamData.positive_integer(),
+              type <- StreamData.member_of(item_types)
+            ) do
+        {:ok, agent} =
+          Agent.start_link(fn ->
+            [Item.new(type, sell_in, quality)]
+          end)
+
+        GildedRose.update_quality(agent)
+        [item] = GildedRose.items(agent)
+
+        assert item.sell_in >= 0
+      end
     end
 
     test "brie gains quality" do
