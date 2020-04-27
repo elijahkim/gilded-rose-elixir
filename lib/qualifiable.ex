@@ -9,6 +9,20 @@ defimpl Qualifiable, for: GildedRose.LegendaryItem do
   end
 end
 
+defimpl Qualifiable, for: GildedRose.AgingItem do
+  def update_quality(%{item: %{sell_in: 0}} = item) do
+    item
+  end
+
+  def update_quality(%{item: %{sell_in: sell_in, quality: 50} = item}) do
+    struct(@for, item: %{item | sell_in: sell_in - 1})
+  end
+
+  def update_quality(%{item: %{sell_in: sell_in, quality: quality} = item}) do
+    struct(@for, item: %{item | sell_in: sell_in - 1, quality: quality + 1})
+  end
+end
+
 defimpl Qualifiable, for: Any do
   def update_quality(%struct{item: item}) do
     item =
